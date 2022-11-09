@@ -10,6 +10,9 @@ let lastHole = -1;
 let points = 0;
 let difficulty = "hard";
 
+let whacked = false;
+let whackable = null;
+
 /**
  * Generates a random integer within a range.
  *
@@ -68,13 +71,13 @@ function chooseHole(holes) {
     max--;
   }
   let nextHole = randomInteger(0,max);
-  console.log(`last=${lastHole} 0..${max} next=${nextHole}`);
+  // console.log(`last=${lastHole} 0..${max} next=${nextHole}`);
   if ( lastHole != -1 && ( nextHole >= lastHole )) {
     nextHole++;
-    console.log(`               ++next=${nextHole}`);
+    // console.log(`               ++next=${nextHole}`);
   }
   lastHole = nextHole;
-  console.log(nextHole);
+  // console.log(nextHole);
   return holes[ nextHole ];
 }
 
@@ -113,6 +116,7 @@ function gameOver() {
 */
 function showUp() {
   let delay = setDelay('easy');
+  // delay=2000;
   const hole = chooseHole(holes);
   return showAndHide(hole, delay);
 }
@@ -127,7 +131,11 @@ function showUp() {
 */
 function showAndHide(hole, delay){
   toggleVisibility(hole);
+  whackable = hole.id.substr(4);
+  whacked = false;
+  // console.log(`whackable ${whackable}`);
   const timeoutID = setTimeout(() => {
+    // console.log('hide');
     toggleVisibility(hole);
     gameOver();
   }, delay);
@@ -205,7 +213,11 @@ function startTimer() {
 *
 */
 function whack(event) {
-  updateScore();
+  // console.log(`${event.target.id.substr(4)} ? ${whackable} ... ${whacked}`);
+  if ( ( event.target.id.substr(4) === whackable ) && !whacked ) {
+    whacked = true;
+    updateScore();
+  }
   return points;
 }
 
@@ -215,7 +227,7 @@ function whack(event) {
 * for an example on how to set event listeners using a for loop.
 */
 function setEventListeners(){
-  for ( mole of moles ) {
+  for ( let mole of moles ) {
     mole.addEventListener('click',whack);
   }
   return moles;
@@ -229,6 +241,7 @@ function setEventListeners(){
 */
 function setDuration(duration) {
   time = duration;
+  timerDisplay.textContent = time;
   startTimer();
   return time;
 }
@@ -252,14 +265,18 @@ function stopGame(){
 *
 */
 function startGame(){
-  setDuration(10);
-  lastHole = -1;
-  showUp();
-  return "game started";
+  if ( time == 0 ) {
+    clearScore();
+    setDuration(10);
+    lastHole = -1;
+    showUp();
+    return "game started";
+  }
+  return "game already running"
 }
 
 startButton.addEventListener("click", startGame);
-
+setEventListeners();
 
 // Please do not modify the code below.
 // Used for testing purposes.
