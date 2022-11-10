@@ -292,7 +292,7 @@ describe("US-05: startTimer() and updateTimer()", () => {
     const startGamer = await page.evaluate(() => {
       window.startGame();
     });
-    await page.waitFor(1000);
+    await page.waitForTimeout(1000);
     const time = await page.evaluate(() => {
       return document.querySelector("#timer").innerHTML;
     });
